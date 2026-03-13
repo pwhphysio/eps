@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的運動計劃</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #eef2f7; color: #333; }
+        .header { background: linear-gradient(135deg, #2c7dba, #56b4d3); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .exercise-card {
+            background: white; border-radius: 12px; padding: 20px;
+            margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .exercise-card h2 { font-size: 18px; color: #2c3e50; margin-bottom: 4px; }
+        .exercise-card .code { font-size: 12px; color: #999; font-family: monospace; }
+        .exercise-card .category {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; color: white; margin-bottom: 10px;
+        }
+        .cat-knee { background: #e74c3c; }
+        .cat-shoulder { background: #2ecc71; }
+        .cat-back { background: #9b59b6; }
+        .cat-hip { background: #f39c12; }
+        .cat-neck { background: #1abc9c; }
+        .cat-ankle { background: #e67e22; }
+        .params { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+        .param { background: #f0f4f8; padding: 8px 14px; border-radius: 8px; text-align: center; }
+        .param .value { font-size: 20px; font-weight: 700; color: #2c7dba; }
+        .param .label { font-size: 11px; color: #888; }
+        .instructions { font-size: 14px; color: #555; line-height: 1.6; margin-top: 10px; }
+        .instructions ol { padding-left: 20px; }
+        .instructions li { margin-bottom: 6px; }
+        .error { background: #fff5f5; border-left: 4px solid #e74c3c; padding: 20px; border-radius: 8px; margin: 20px; }
+        .error h2 { color: #c0392b; }
+        .error p { color: #e74c3c; font-size: 14px; }
+        .footer { text-align: center; padding: 20px; color: #999; font-size: 13px; border-top: 1px solid #ddd; margin-top: 20px; }
+
+        /* ---- Video styles ---- */
+        .video-section { margin: 12px 0; }
+        .video-thumbnail {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #000;
+        }
+        .video-thumbnail img {
+            width: 100%;
+            display: block;
+        }
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 56px;
+            height: 56px;
+            background: rgba(0,0,0,0.55);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            padding-left: 3px;
+            transition: background 0.2s;
+        }
+        .video-thumbnail:hover .play-overlay {
+            background: rgba(44,125,186,0.85);
+        }
+        .video-player {
+            display: none;
+        }
+        .video-player-inner {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-player-inner iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .video-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: #f0f4f8;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #2c7dba;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .video-btn:hover {
+            background: #e0e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>我的運動計劃</h1>
+    <p>處方運動 — 請依照以下指示進行</p>
+</div>
+
+<div class="container" id="content">
+    <p style="text-align:center;padding:40px;color:#999;">正在載入運動項目...</p>
+</div>
+
+<div class="footer">
+    如果您感到疼痛加劇或有任何疑問，<br>請聯繫您的物理治療部門。
+</div>
+
+<script>
+/*
+ * ======================================================
+ *  HOW TO ADD A YOUTUBE VIDEO
+ * ======================================================
+ *  Paste ANY YouTube link format into the video field:
+ *
+ *    video:'https://www.youtube.com/watch?v=IF5eDfb8afM'
+ *    video:'https://youtu.be/IF5eDfb8afM'
+ *    video:'https://m.youtube.com/watch?v=IF5eDfb8afM&si=abc'
+ *    video:'IF5eDfb8afM'            (just the ID also works)
+ *
+ *  Leave as 'PASTE_YOUTUBE_LINK_HERE' to hide the video.
+ * ======================================================
+ */
+
+var EXERCISES = {
+    // ──── 膝蓋 (KNEE) ────
+    k01: { name:'股四頭肌收縮', cat:'knee', video:'https://youtu.be/IF5eDfb8afM?si=n-5cdySZiLPLtQgv', instructions:['坐著並將腿伸直放在平面上。','收緊大腿上方的肌肉，將膝蓋往下壓。','維持收縮，然後放鬆。','依照處方次數重複進行。'] },
+    k02: { name:'直腿抬高', cat:'knee', video:'https://youtu.be/CLH54xHXDMk', instructions:['仰臥，一腿彎曲，另一腿伸直。','收緊伸直腿的大腿肌肉。','將伸直的腿抬離地面約30公分。','短暫維持後，緩慢放下。'] },
+    k03: { name:'腳跟滑動', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['仰臥，雙腿伸直。','慢慢彎曲一側膝蓋，讓腳跟滑向臀部。','再滑回起始位置。','保持動作平順且受控。'] },
+    k04: { name:'靠牆深蹲', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['背靠牆站立，雙腳與肩同寬。','慢慢沿牆壁向下滑，彎曲膝蓋。','維持深蹲姿勢。','慢慢滑回站立位置。'] },
+    k05: { name:'踏階運動', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['站在一個階梯或低平台前。','一腳踏上，再將另一腳也踏上。','以同一腳先踏下階梯。','交替前導腳進行。'] },
+    k06: { name:'終端膝伸展', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['仰臥時在膝蓋下方放一捲毛巾。','將腳抬離平面以伸直膝蓋。','在完全伸展位置維持。','緩慢放下。'] },
+    k07: { name:'腿後肌彎舉', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['站立並扶著椅子以保持平衡。','慢慢彎曲一側膝蓋，將腳跟帶向臀部。','在頂端短暫維持。','緩慢放下。'] },
+    k08: { name:'小腿提踵', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['雙腳與髖同寬站立，扶著椅子以保持平衡。','盡可能踮起腳尖。','在頂端短暫維持。','緩慢放下。'] },
+    k09: { name:'單腿平衡', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['靠近牆壁或椅子，單腳站立以確保安全。','嘗試不扶東西維持平衡。','站立膝蓋保持微彎。','維持指定時間後換腿。'] },
+    k10: { name:'側向踏階下降', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['站在階梯上，一腳靠近邊緣。','彎曲站立腿的膝蓋，慢慢將另一腳向地面降低。','輕觸地面後回到起始位置。','保持膝蓋對齊腳尖方向。'] },
+
+    // ──── 肩膀 (SHOULDER) ────
+    s01: { name:'鐘擺運動', cat:'shoulder', instructions:['身體前傾，一手撐在桌面上。','讓患側手臂自然下垂。','輕輕將手臂做小幅度的繞圈擺動。','在舒適範圍內逐漸增大幅度。'] },
+    s02: { name:'手指爬牆運動', cat:'shoulder', instructions:['面對牆壁站立，距離約一臂之遠。','將指尖放在牆上與腰同高的位置。','慢慢讓手指沿牆壁向上爬，盡可能往高處。','再慢慢讓手指向下爬回。'] },
+    s03: { name:'彈力帶外旋', cat:'shoulder', instructions:['雙手握住彈力帶，手肘貼在身體兩側彎曲成90度。','保持手肘緊貼身體。','將前臂向外旋轉，拉開彈力帶。','緩慢回到起始位置。'] },
+    s04: { name:'彈力帶內旋', cat:'shoulder', instructions:['將彈力帶固定在手肘高度的位置。','側身面對固定點站立。','手肘彎曲90度貼在身側，將前臂向內旋轉。','緩慢回到起始位置。'] },
+    s05: { name:'肩胛骨夾擠', cat:'shoulder', instructions:['坐著或站著，雙臂放在身體兩側。','將兩側肩胛骨向中間夾擠。','維持夾擠姿勢。','慢慢放鬆並重複。'] },
+    s06: { name:'肩關節屈曲伸展', cat:'shoulder', instructions:['站在門框旁，將手臂抬至肩膀高度。','將前臂靠在門框上。','身體輕輕向前傾，直到感覺到伸展。','維持後放鬆。'] },
+    s07: { name:'跨身伸展', cat:'shoulder', instructions:['將一隻手臂橫過胸前。','用另一手在手肘上方輕輕施壓。','維持伸展姿勢。','您應該會感覺到肩膀後方的伸展。'] },
+    s08: { name:'側臥伸展', cat:'shoulder', instructions:['側躺在患側，手臂在前方，手肘彎曲90度。','用另一隻手輕輕將前臂壓向地面。','維持伸展姿勢。','您應該會感覺到肩膀後方的伸展。'] },
+    s09: { name:'俯臥 Y 字抬舉', cat:'shoulder', instructions:['面朝下趴在平面或長凳上。','雙臂向頭頂上方伸展成 Y 字形，拇指朝上。','將雙臂向天花板方向抬起。','短暫維持後緩慢放下。'] },
+    s10: { name:'俯臥 T 字抬舉', cat:'shoulder', instructions:['面朝下趴在平面或長凳上。','雙臂向兩側伸展成 T 字形，拇指朝上。','將雙臂向天花板方向抬起。','短暫維持後緩慢放下。'] },
+
+    // ──── 背部 (BACK) ────
+    b01: { name:'貓牛伸展', cat:'back', instructions:['以雙手和雙膝跪撐的姿勢開始。','將背部向上拱起（貓式），同時收下巴。','然後讓腹部向地面下沉，抬起頭部（牛式）。','在兩個姿勢之間緩慢交替。'] },
+    b02: { name:'鳥狗式', cat:'back', instructions:['以雙手和雙膝跪撐的姿勢開始。','將一隻手臂向前伸，同時將對側腿向後伸。','保持背部平坦，核心收緊。','維持後回到起始位置，換邊進行。'] },
+    b03: { name:'骨盆傾斜', cat:'back', instructions:['仰臥，雙膝彎曲，雙腳平放在地面上。','收緊腹部肌肉，將下背部壓平貼地。','維持傾斜姿勢。','放鬆後重複。'] },
+    b04: { name:'橋式', cat:'back', instructions:['仰臥，雙膝彎曲，雙腳平放在地面上。','夾緊臀部，將髖部向天花板抬起。','在頂端維持。','緩慢放下。'] },
+    b05: { name:'膝蓋抱胸伸展', cat:'back', instructions:['仰臥，雙膝彎曲。','將一側膝蓋拉向胸部，雙手抱住大腿後側。','維持伸展姿勢。','放下後換另一側腿重複。'] },
+    b06: { name:'嬰兒式', cat:'back', instructions:['跪在地面上，臀部坐在腳跟上。','雙臂向前方伸展在地面上。','讓胸部向地面沉降。','維持姿勢並深呼吸。'] },
+    b07: { name:'俯臥撐起（麥乾式）', cat:'back', instructions:['面朝下趴著，雙手放在肩膀下方。','慢慢將上半身撐起，髖部保持貼地。','在頂端維持。','緩慢放下。'] },
+    b08: { name:'死蟲式', cat:'back', instructions:['仰臥，雙臂向天花板伸直，雙膝彎曲90度。','慢慢將一隻手臂向頭頂方向放下，同時伸直對側腿。','保持下背部緊貼地面。','回到起始位置後換邊進行。'] },
+    b09: { name:'側棒式', cat:'back', instructions:['側躺，手肘放在肩膀正下方。','將髖部抬離地面，使身體成一直線。','維持姿勢。','放下後換另一側重複。'] },
+    b10: { name:'坐姿腰椎旋轉', cat:'back', instructions:['坐在椅子上，雙腳平放在地面。','雙臂交叉放在胸前。','慢慢將軀幹旋轉到一側。','維持後回到中間，再旋轉到另一側。'] },
+
+    // ──── 髖部 (HIP) ────
+    h01: { name:'蛤蜊式', cat:'hip', instructions:['側躺，雙膝彎曲，雙腳併攏。','保持雙腳併攏，將上方的膝蓋盡可能抬高。','在頂端短暫維持。','緩慢放下。'] },
+    h02: { name:'髖屈肌伸展', cat:'hip', instructions:['單膝跪地，另一腳踏在前方。','輕輕將髖部向前推。','您應該會感覺到髖部前方的伸展。','維持後換邊進行。'] },
+    h03: { name:'梨狀肌伸展', cat:'hip', instructions:['仰臥，雙膝彎曲。','將一側腳踝放在對側膝蓋上。','將未交叉的那條腿拉向胸部。','維持伸展後換邊進行。'] },
+    h04: { name:'側臥髖外展', cat:'hip', instructions:['側躺，雙腿伸直。','將上方的腿向天花板方向抬起，保持伸直。','在頂端短暫維持。','緩慢放下。'] },
+    h05: { name:'髖橋式', cat:'hip', instructions:['仰臥，雙膝彎曲，雙腳平放。','夾緊臀部，將髖部抬起。','在頂端維持。','緩慢放下。'] },
+    h06: { name:'站立髖伸展', cat:'hip', instructions:['站立並扶著椅子以保持平衡。','保持腿部伸直，將腿向後踢。','在頂端夾緊臀部肌肉。','緩慢回到起始位置。'] },
+    h07: { name:'消防栓式', cat:'hip', instructions:['以雙手和雙膝跪撐的姿勢開始。','保持膝蓋彎曲，將一側腿向外側抬起。','在頂端短暫維持。','緩慢放下。'] },
+    h08: { name:'4 字伸展', cat:'hip', instructions:['坐在椅子上，將一側腳踝放在對側膝蓋上。','輕輕向前傾，保持背部挺直。','您應該會感覺到髖部和臀部的伸展。','維持後換邊進行。'] },
+    h09: { name:'怪獸走路', cat:'hip', instructions:['將彈力帶繞在腳踝處。','以微蹲姿勢站立。','向側方行走，保持彈力帶的張力。','向一邊走10步，然後反方向走回。'] },
+    h10: { name:'單腿硬舉', cat:'hip', instructions:['單腳站立，膝蓋微彎。','以髖部為軸心向前傾，另一腿向後伸展。','全程保持背部挺直。','回到站立姿勢後重複。'] },
+
+    // ──── 頸部 (NECK) ────
+    n01: { name:'收下巴運動', cat:'neck', instructions:['以正確姿勢坐著或站著。','輕輕將下巴向後收，做出「雙下巴」的動作。','維持收縮姿勢。','放鬆後重複。'] },
+    n02: { name:'頸部前屈伸展', cat:'neck', instructions:['以正確姿勢坐著或站著。','慢慢將下巴低向胸部。','您應該會感覺到頸部後方的伸展。','維持後慢慢回到中立位置。'] },
+    n03: { name:'頸部側彎', cat:'neck', instructions:['以正確姿勢坐著或站著。','慢慢將耳朵靠向肩膀。','不要聳肩。','維持伸展後換另一側重複。'] },
+    n04: { name:'頸部旋轉', cat:'neck', instructions:['以正確姿勢坐著或站著。','慢慢轉頭看向一側肩膀的後方。','在最大角度維持。','回到中間後換另一側重複。'] },
+    n05: { name:'提肩胛肌伸展', cat:'neck', instructions:['坐著，一手握住椅子底部。','將頭傾向對側，並低頭看向對側膝蓋。','用另一手輕輕增加伸展力度。','維持後換邊進行。'] },
+    n06: { name:'上斜方肌伸展', cat:'neck', instructions:['坐著，一手握住椅子底部。','將頭直接傾向對側。','用另一手輕輕增加伸展力度。','維持後換邊進行。'] },
+    n07: { name:'頸部等長前屈', cat:'neck', instructions:['將手掌放在額頭上。','頭部向前推抵住手掌，但不要移動。','維持收縮。','放鬆後重複。'] },
+    n08: { name:'頸部等長後伸', cat:'neck', instructions:['將雙手放在頭後方。','頭部向後推抵住雙手，但不要移動。','維持收縮。','放鬆後重複。'] },
+    n09: { name:'胸椎伸展', cat:'neck', instructions:['坐在椅子上，雙手放在頭後方。','輕輕讓上背部靠著椅背向後伸展。','維持伸展姿勢。','回到起始位置後重複。'] },
+    n10: { name:'斜角肌伸展', cat:'neck', instructions:['坐著，一手握住椅子底部。','將頭傾向對側並略微向後仰。','您應該會感覺到頸部側面的伸展。','維持後換邊進行。'] },
+
+    // ──── 踝部 (ANKLE) ────
+    a01: { name:'踝關節幫浦運動', cat:'ankle', instructions:['坐著或躺著，腿部伸直。','將腳尖向遠離身體的方向下壓（蹠屈）。','然後將腳尖向身體方向勾起（背屈）。','以幫浦動作的節奏重複進行。'] },
+    a02: { name:'踝關節繞環', cat:'ankle', instructions:['坐著或躺著，腿部伸直。','慢慢地將踝關節做繞環動作。','順時針方向繞數圈。','然後反方向繞數圈。'] },
+    a03: { name:'毛巾伸展', cat:'ankle', instructions:['坐著，腿部向前伸直。','將毛巾繞在前腳掌。','輕輕將毛巾拉向自己。','維持伸展姿勢。'] },
+    a04: { name:'小腿提踵（踝部）', cat:'ankle', instructions:['靠近牆壁站立，雙腳與髖同寬。','盡可能踮起腳尖。','在頂端短暫維持。','緩慢放下。'] },
+    a05: { name:'單腿平衡（踝部）', cat:'ankle', instructions:['用患側腳站立，靠近牆壁以確保安全。','嘗試不扶東西維持平衡。','保持膝蓋微彎。','維持指定時間。'] },
+    a06: { name:'彈力帶外翻', cat:'ankle', instructions:['坐著，將彈力帶繞在前腳掌，固定在內側。','將腳向外翻，對抗彈力帶的阻力。','短暫維持。','緩慢回到起始位置後重複。'] },
+    a07: { name:'彈力帶內翻', cat:'ankle', instructions:['坐著，將彈力帶繞在前腳掌，固定在外側。','將腳向內翻，對抗彈力帶的阻力。','短暫維持。','緩慢回到起始位置後重複。'] },
+    a08: { name:'腳跟行走', cat:'ankle', instructions:['雙腳與髖同寬站立。','將腳尖抬離地面，用腳跟行走。','向前走20步。','全程保持良好姿勢。'] },
+    a09: { name:'腳尖行走', cat:'ankle', instructions:['雙腳與髖同寬站立。','踮起腳尖。','用腳尖向前走20步。','全程保持良好姿勢。'] },
+    a10: { name:'BOSU 球平衡', cat:'ankle', instructions:['單腳或雙腳站在 BOSU 球上。','嘗試維持平衡。','從雙腳開始，逐漸進階到單腳。','旁邊放一面牆壁以確保安全。'] }
+};
+
+var CAT_LABELS = { knee:'膝蓋', shoulder:'肩膀', back:'背部', hip:'髖部', neck:'頸部', ankle:'踝部' };
+
+/*
+ * Extracts the YouTube video ID from any URL format:
+ *   https://www.youtube.com/watch?v=ID
+ *   https://m.youtube.com/watch?v=ID&si=...
+ *   https://youtu.be/ID
+ *   https://youtu.be/ID?si=...
+ *   or just the raw ID itself
+ */
+function extractYouTubeID(input) {
+    if (!input) return null;
+    input = input.trim();
+
+    /* youtu.be/ID  or  youtu.be/ID?si=... */
+    var shortMatch = input.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+    if (shortMatch) return shortMatch[1];
+
+    /* youtube.com/watch?...v=ID... */
+    var longMatch = input.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+    if (longMatch) return longMatch[1];
+
+    /* youtube.com/embed/ID */
+    var embedMatch = input.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/);
+    if (embedMatch) return embedMatch[1];
+
+    /* Already a raw 11-char ID */
+    if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+
+    return null;
+}
+
+function parseURL() {
+    var params = new URLSearchParams(window.location.search);
+    var exParam = params.get('ex');
+    if (!exParam) return [];
+
+    var items = exParam.split(',');
+    var result = [];
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i].trim();
+        var code, sets = 3, reps = 10, hold = 0, freq = 'daily';
+
+        var parts = item.split('.');
+        if (parts.length > 1) freq = parts[1];
+
+        var main = parts[0].split(':');
+        code = main[0];
+
+        if (main.length > 1) {
+            var prescription = main[1];
+            var xMatch = prescription.match(/(\d+)x(\d+)/);
+            if (xMatch) { sets = parseInt(xMatch[1]); reps = parseInt(xMatch[2]); }
+            var hMatch = prescription.match(/h(\d+)/);
+            if (hMatch) hold = parseInt(hMatch[1]);
+        }
+
+        if (EXERCISES[code]) {
+            result.push({ code:code, sets:sets, reps:reps, hold:hold, freq:freq });
+        }
+    }
+    return result;
+}
+
+/* ── Video toggle ── */
+function toggleVideo(code, videoId) {
+    var section = document.getElementById('vid-' + code);
+    var thumb = section.querySelector('.video-thumbnail');
+    var player = section.querySelector('.video-player');
+    var btn = section.querySelector('.video-btn');
+
+    if (player.style.display === 'none' || player.style.display === '') {
+        thumb.style.display = 'none';
+        player.style.display = 'block';
+        player.innerHTML = '<div class="video-player-inner"><iframe src="https://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=1" allow="autoplay" allowfullscreen loading="lazy"></iframe></div>';
+        btn.textContent = '\u2715  隱藏影片';
+    } else {
+        player.style.display = 'none';
+        player.innerHTML = '';
+        thumb.style.display = 'block';
+        btn.textContent = '\u25B6  觀看影片';
+    }
+}
+
+function render() {
+    var exercises = parseURL();
+    var container = document.getElementById('content');
+
+    if (exercises.length === 0) {
+        container.innerHTML = '<div class="error"><h2>找不到運動項目</h2><p>請掃描物理治療師提供的有效 QR 碼。</p></div>';
+        return;
+    }
+
+    var html = '';
+    var freqLabels = { 'daily':'每天', '2x-daily':'每天兩次', '3x-week':'每週三次', 'alternate':'隔天' };
+
+    for (var i = 0; i < exercises.length; i++) {
+        var ex = exercises[i];
+        var data = EXERCISES[ex.code];
+        var videoId = data.video ? extractYouTubeID(data.video) : null;
+
+        html += '<div class="exercise-card">';
+        html += '<span class="category cat-' + data.cat + '">' + CAT_LABELS[data.cat] + '</span>';
+        html += '<h2>' + (i+1) + '. ' + data.name + '</h2>';
+
+        html += '<div class="params">';
+        html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
+        html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
+        if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
+        html += '<div class="param"><div class="value">' + (freqLabels[ex.freq] || ex.freq) + '</div><div class="label">頻率</div></div>';
+        html += '</div>';
+
+        /* ── Video section (only if a valid YouTube ID is resolved) ── */
+        if (videoId) {
+            html += '<div class="video-section" id="vid-' + ex.code + '">';
+            html += '<div class="video-thumbnail" onclick="toggleVideo(\'' + ex.code + '\',\'' + videoId + '\')">';
+            html += '<img src="https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg" alt="影片縮圖">';
+            html += '<div class="play-overlay">\u25B6</div>';
+            html += '</div>';
+            html += '<div class="video-player"></div>';
+            html += '<button class="video-btn" onclick="toggleVideo(\'' + ex.code + '\',\'' + videoId + '\')">\u25B6  觀看影片</button>';
+            html += '</div>';
+        }
+
+        html += '<div class="instructions"><strong>動作說明：</strong><ol>';
+        for (var j = 0; j < data.instructions.length; j++) {
+            html += '<li>' + data.instructions[j] + '</li>';
+        }
+        html += '</ol></div>';
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
