@@ -16,10 +16,16 @@
             margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .exercise-card h2 { font-size: 18px; color: #2c3e50; margin-bottom: 4px; }
-        .exercise-card .code { font-size: 12px; color: #999; font-family: monospace; }
+        .exercise-card .code { font-size: 12px; color: #999; font-family: monospace; margin-bottom: 4px; display: block; }
+        .exercise-card .name-en { font-size: 13px; color: #888; margin-bottom: 8px; font-style: italic; }
         .exercise-card .category {
             display: inline-block; padding: 3px 10px; border-radius: 20px;
             font-size: 11px; font-weight: 600; color: white; margin-bottom: 10px;
+        }
+        .subcat {
+            display: inline-block; padding: 2px 8px; border-radius: 12px;
+            font-size: 10px; font-weight: 600; color: #2980b9; background: #ebf5fb;
+            margin-left: 6px; vertical-align: middle;
         }
         .cat-scoliosis { background: #2980b9; }
         .cat-knee { background: #e74c3c; }
@@ -40,72 +46,47 @@
         .error p { color: #e74c3c; font-size: 14px; }
         .footer { text-align: center; padding: 20px; color: #999; font-size: 13px; border-top: 1px solid #ddd; margin-top: 20px; }
 
+        /* ---- Exercise image styles ---- */
+        .exercise-image {
+            margin: 12px 0; display: flex; gap: 8px;
+            justify-content: center; flex-wrap: wrap;
+        }
+        .exercise-image img {
+            max-width: 100%; max-height: 280px; border-radius: 8px;
+            object-fit: contain; background: #f8f9fa; padding: 4px;
+        }
+        .exercise-image.multi img { max-width: 48%; }
+
         /* ---- Video styles ---- */
         .video-section { margin: 12px 0; }
         .video-thumbnail {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            background: #000;
+            position: relative; border-radius: 8px; overflow: hidden;
+            cursor: pointer; background: #000;
         }
-        .video-thumbnail img {
-            width: 100%;
-            display: block;
-        }
+        .video-thumbnail img { width: 100%; display: block; }
         .play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 56px;
-            height: 56px;
-            background: rgba(0,0,0,0.55);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-            padding-left: 3px;
-            transition: background 0.2s;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 56px; height: 56px;
+            background: rgba(0,0,0,0.55); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 22px; padding-left: 3px; transition: background 0.2s;
         }
-        .video-thumbnail:hover .play-overlay {
-            background: rgba(44,125,186,0.85);
-        }
-        .video-player {
-            display: none;
-        }
+        .video-thumbnail:hover .play-overlay { background: rgba(44,125,186,0.85); }
+        .video-player { display: none; }
         .video-player-inner {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #000;
+            position: relative; width: 100%; padding-bottom: 56.25%;
+            border-radius: 8px; overflow: hidden; background: #000;
         }
         .video-player-inner iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
         }
         .video-btn {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 6px 16px;
-            background: #f0f4f8;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #2c7dba;
-            cursor: pointer;
-            font-weight: 600;
+            display: inline-block; margin-top: 8px; padding: 6px 16px;
+            background: #f0f4f8; border: 1px solid #ddd; border-radius: 20px;
+            font-size: 13px; color: #2c7dba; cursor: pointer; font-weight: 600;
             transition: background 0.2s;
         }
-        .video-btn:hover {
-            background: #e0e8f0;
-        }
+        .video-btn:hover { background: #e0e8f0; }
     </style>
 </head>
 <body>
@@ -126,28 +107,269 @@
 <script>
 /*
  * ======================================================
+ *  IMAGE CONFIGURATION
+ * ======================================================
+ *  Place exercise images in an 'images/' folder in the
+ *  same directory / repository as this HTML file.
+ *
+ *  GitHub repo structure example:
+ *    /index.html           ← this file
+ *    /images/sc01.png
+ *    /images/sc02.png
+ *    /images/sc03.png
+ *    ...
+ *
+ *  Each exercise has an 'image' field below.
+ *  Replace the filename with your actual image file.
+ *  Set to null to hide the image for that exercise.
+ *
+ *  IMAGE FILE MAPPING (Scoliosis):
+ *  ───────────────────────────────────────────────────
+ *  PSSE – Thoracic:
+ *    sc01.png  → Side-bending in Sitting (A)
+ *    sc02.png  → Side-bending in Sitting (B)
+ *    sc03.png  → Derotation – Fixed Pelvis
+ *    sc04.png  → Derotation – Fixed Shoulder
+ *    sc05.png  → Stretching the Weak Side
+ *    sc06.png  → Between 2 Poles (Standing)
+ *    sc07.png  → Between 2 Poles (Sitting)
+ *    sc08.png  → Chest Twister
+ *    sc09.png  → Shoulder Counter Traction Side-Position
+ *    sc10.png  → Shoulder Counter Traction Elastic Band
+ *    sc11.png  → Sideways Hang (A)
+ *    sc12.png  → Sideways Hang (B)
+ *
+ *  PSSE – Lumbar:
+ *    sc13.png  → Posterior Depression
+ *    sc14.png  → Foot under a Bar (Sitting)
+ *    sc15.png  → Foot under a Bar (Standing)
+ *    sc16.png  → Pelvic Tilt – Left Lumbar Curve
+ *    sc17.png  → Kneeling on One Knee
+ *    sc18.png  → Muscle Cylinder Side-Position
+ *    sc19.png  → Muscle Cylinder (Standing)
+ *    sc20.png  → Prominent Hip Exercises
+ *
+ *  PSSE – Double Curve:
+ *    sc21.png  → Shoulder Counter Traction + Muscle Cylinder
+ *    sc22.png  → Sail (Standing)
+ *    sc23.png  → Sail (Kneeling)
+ *
+ *  Relaxed Posture:
+ *    sc24.png  → Relaxed Posture 1
+ *    sc25.png  → Relaxed Posture 2
+ *    sc26.png  → Relaxed Posture 3
+ *
+ *  Gait:
+ *    sc27.png  → Conscious Gait
+ *    sc28.png  → Schroth Gait
+ *
+ *  Sagittal Plane Correction:
+ *    sc29.png   → Standing in a Doorway
+ *    sc30.png   → Kneeling between 2 Chairs
+ *    sc31a.png  → Jelly Fish (image 1)
+ *    sc31b.png  → Jelly Fish (image 2)
+ *    sc32.png   → Swordfish
+ *
+ *  General – Strengthening:
+ *    sc33.png  → Bird Dog
+ *    sc34.png  → Plank
+ *    sc35.png  → Side-Plank
+ *    sc36.png  → Crunches / Sit-up
+ *
+ *  General – Stretching:
+ *    sc37.png  → Hamstrings Stretching (A)
+ *    sc38.png  → Hamstrings Stretching (B)
+ *    sc39.png  → Back Muscles Stretching
+ *    sc40.png  → Calves – Gastrocnemius
+ *    sc41.png  → Calves – Soleus
+ * ======================================================
+ */
+var IMAGE_BASE_PATH = './images/';
+
+/*
+ * ======================================================
+ *  URL PARAMETER FORMAT
+ * ======================================================
+ *  ?ex=CODE:PRESCRIPTION.FREQUENCY, ...
+ *
+ *  PRESCRIPTION formats:
+ *    3x10    → 3 sets × 10 reps  (or 3 sets × 10 sec for seconds-sets unit)
+ *    3x10h5  → 3 sets × 10 reps, hold 5 sec
+ *    r5      → 5 repetitions
+ *    b5      → 5 breathing cycles
+ *    m15     → 15 minutes
+ *
+ *  FREQUENCY:
+ *    daily | 2x-daily | 3x-week | alternate
+ *
+ *  Examples:
+ *    ?ex=sc08:b5.daily,sc34:3x30.daily
+ *    ?ex=sc01:r5.daily,sc24:m15.daily
+ *    ?ex=k01:3x10h5.daily,sc09:b8.2x-daily
+ * ======================================================
+ */
+
+/*
+ * ======================================================
  *  HOW TO ADD A YOUTUBE VIDEO
  * ======================================================
  *  Paste ANY YouTube link format into the video field:
- *
  *    video:'https://www.youtube.com/watch?v=IF5eDfb8afM'
  *    video:'https://youtu.be/IF5eDfb8afM'
- *    video:'https://m.youtube.com/watch?v=IF5eDfb8afM&si=abc'
  *    video:'IF5eDfb8afM'            (just the ID also works)
- *
  *  Leave as 'PASTE_YOUTUBE_LINK_HERE' to hide the video.
  * ======================================================
  */
 
 var EXERCISES = {
-    // ──── 脊柱側彎 (SCOLIOSIS) ────
-    sc01: { name:'側棒式（凸側朝下）', cat:'scoliosis', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['凸側（脊柱彎曲突出的一側）朝下側躺，前臂撐地，手肘在肩膀正下方。','收緊核心肌群，抬起臀部，使身體從頭到腳成一直線。','維持指定時間後慢慢放下休息。','如感困難，可彎曲下方膝蓋以降低難度。'] },
-    sc02: { name:'骨盆傾斜矯正', cat:'scoliosis', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['仰躺，雙膝彎曲，雙腳平放地面。','辨識骨盆較高的一側。','輕輕將骨盆傾斜至水平位置，同時將腰部壓向地面。','維持姿勢，正常呼吸，持續指定秒數後放鬆。'] },
-    sc03: { name:'跪姿側伸展', cat:'scoliosis', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['雙膝跪地，身體直立。','將凹側（脊柱彎曲凹入的一側）的腿向側邊伸出。','凹側手臂舉過頭頂。','身體向凸側傾斜，伸展凹側，維持指定時間後回正。'] },
-    sc04: { name:'俯臥超人式合併去旋轉', cat:'scoliosis', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['面朝下趴臥，雙臂向前伸展。','針對側彎方向，抬起對側的手臂和腿（例如右胸彎則抬右手與左腳）。','抬起時專注於軀幹去旋轉，保持骨盆穩定。','短暫維持後放下，重複指定次數。'] },
-    sc05: { name:'靠牆脊柱伸展', cat:'scoliosis', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['背部靠牆站立，腳跟距離牆壁約10公分。','將腳跟、臀部、肩膀和頭部盡量貼牆。','雙臂沿牆慢慢向上伸展，保持貼牆。','專注於向上延伸脊柱，感受椎間空間增加，維持指定秒數。'] },
 
-    // ──── 膝蓋 (KNEE) ────
+    // ════════════════════════════════════════════════════
+    //  SCOLIOSIS EXERCISES 脊柱側彎運動
+    // ════════════════════════════════════════════════════
+
+    // ──── PSSE – Thoracic 胸椎 ────
+
+    sc01: { name:'坐姿側屈 (A)', nameEn:'Side-bending in Sitting (Variant A)', cat:'scoliosis', subcat:'psse-thoracic', unit:'reps', image:'sc01.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['坐在椅子或凳子上，保持骨盆穩定。','依照物理治療師指示的方向進行側屈。','按指定次數重複。'] },
+
+    sc02: { name:'坐姿側屈 (B)', nameEn:'Side-bending in Sitting (Variant B)', cat:'scoliosis', subcat:'psse-thoracic', unit:'reps', image:'sc02.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['坐在椅子或凳子上，保持骨盆穩定。','依照物理治療師指示的方向進行側屈。','按指定次數重複。'] },
+
+    sc03: { name:'仰臥固定骨盆位反旋肋骨突出', nameEn:'Derotation of Rib Hump – Fixed Pelvis', cat:'scoliosis', subcat:'psse-thoracic', unit:'reps', image:'sc03.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['仰臥，固定骨盆位置。','進行肋骨突出部位的反旋轉動作。','按指定次數重複，注意控制動作。'] },
+
+    sc04: { name:'仰臥固定肩膀位反旋肋骨突出', nameEn:'Derotation of Rib Hump – Fixed Shoulder', cat:'scoliosis', subcat:'psse-thoracic', unit:'reps', image:'sc04.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['仰臥，固定肩膀位置。','進行肋骨突出部位的反旋轉動作。','按指定次數重複，注意控制動作。'] },
+
+    sc05: { name:'伸展弱側', nameEn:'Stretching the Weak Side', cat:'scoliosis', subcat:'psse-thoracic', unit:'minutes', image:'sc05.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['依照物理治療師指示的姿勢伸展較弱的一側。','維持指定時間（分鐘）。','保持正常呼吸，不要過度用力。'] },
+
+    sc06: { name:'兩杆之間（站立）', nameEn:'Between 2 Poles (Standing)', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc06.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['站立於兩杆之間，按物理治療師指示的姿勢站立。','進行施羅特呼吸法（旋轉呼吸）。','按指定呼吸循環次數完成。'] },
+
+    sc07: { name:'兩杆之間（坐姿）', nameEn:'Between 2 Poles (Sitting)', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc07.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['坐在兩杆之間，按物理治療師指示的姿勢就坐。','進行施羅特呼吸法（旋轉呼吸）。','按指定呼吸循環次數完成。'] },
+
+    sc08: { name:'胸捻轉', nameEn:'Chest Twister', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc08.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示的姿勢進行胸椎反旋轉動作。','配合施羅特呼吸法。','按指定呼吸循環次數完成。'] },
+
+    sc09: { name:'側臥位肩部反向牽引', nameEn:'Shoulder Counter Traction in Side-Position', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc09.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['側臥，按物理治療師指示的方向。','進行肩部反向牽引動作。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc10: { name:'用彈性帶的肩部反向牽引', nameEn:'Shoulder Counter Traction with Elastic Band', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc10.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['使用彈性帶進行肩部反向牽引。','按物理治療師指示的方向和力度進行。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc11: { name:'側懸 (A)', nameEn:'Sideways Hang (Variant A)', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc11.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行側向懸掛。','配合施羅特呼吸法。','按指定呼吸循環次數完成。'] },
+
+    sc12: { name:'側懸 (B)', nameEn:'Sideways Hang (Variant B)', cat:'scoliosis', subcat:'psse-thoracic', unit:'breathing', image:'sc12.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行側向懸掛。','配合施羅特呼吸法。','按指定呼吸循環次數完成。'] },
+
+    // ──── PSSE – Lumbar 腰椎 ────
+
+    sc13: { name:'向後壓抑', nameEn:'Posterior Depression', cat:'scoliosis', subcat:'psse-lumbar', unit:'reps', image:'sc13.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行腰椎後方壓抑動作。','注意控制動作幅度。','按指定次數重複。'] },
+
+    sc14: { name:'坐位腳在橫木下', nameEn:'Foot under a Bar in Sitting', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc14.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['坐姿下將腳放在橫木下方。','按物理治療師指示調整姿勢。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc15: { name:'站立位腳在橫木下', nameEn:'Foot under a Bar in Standing', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc15.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['站立時將腳放在橫木下方。','按物理治療師指示調整姿勢。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc16: { name:'骨盆傾斜 - 左腰彎', nameEn:'Pelvic Tilt – Left Lumbar Curve', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc16.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行骨盆傾斜矯正。','針對左腰彎進行調整。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc17: { name:'單膝跪', nameEn:'Kneeling on One Knee', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc17.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['單膝跪地，按物理治療師指示的方向。','調整軀幹至矯正姿勢。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc18: { name:'側臥位肌肉圓柱', nameEn:'Muscle Cylinder in Side-Position', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc18.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['側臥，按物理治療師指示放置身體。','進行肌肉圓柱矯正運動。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc19: { name:'肌肉圓柱（站立）', nameEn:'Muscle Cylinder (Standing)', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc19.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['站立姿勢下進行肌肉圓柱矯正運動。','按物理治療師指示調整姿勢。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc20: { name:'突出髖部運動', nameEn:'Prominent Hip Exercises', cat:'scoliosis', subcat:'psse-lumbar', unit:'breathing', image:'sc20.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['針對突出的髖部進行矯正運動。','按物理治療師指示的方向和力度進行。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    // ──── PSSE – Double Curve 雙彎 ────
+
+    sc21: { name:'側臥位肩部反向牽引 + 肌肉圓柱', nameEn:'Shoulder Counter Traction + Muscle Cylinder in Side-Position', cat:'scoliosis', subcat:'psse-double', unit:'breathing', image:'sc21.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['側臥，同時進行肩部反向牽引和肌肉圓柱矯正。','此為雙彎複合矯正動作。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc22: { name:'帆（站立位）', nameEn:'Sail (Standing)', cat:'scoliosis', subcat:'psse-double', unit:'breathing', image:'sc22.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['站立姿勢下進行帆式矯正動作。','按物理治療師指示展開身體。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc23: { name:'帆（跪位）', nameEn:'Sail (Kneeling)', cat:'scoliosis', subcat:'psse-double', unit:'breathing', image:'sc23.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['跪姿下進行帆式矯正動作。','按物理治療師指示展開身體。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    // ──── Relaxed Posture 放鬆姿勢 ────
+
+    sc24: { name:'放鬆姿勢 1', nameEn:'Relaxed Posture 1', cat:'scoliosis', subcat:'relaxed-posture', unit:'minutes', image:'sc24.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示採取放鬆姿勢。','維持指定時間（分鐘）。','保持自然呼吸，放鬆全身。'] },
+
+    sc25: { name:'放鬆姿勢 2', nameEn:'Relaxed Posture 2', cat:'scoliosis', subcat:'relaxed-posture', unit:'minutes', image:'sc25.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示採取放鬆姿勢。','維持指定時間（分鐘）。','保持自然呼吸，放鬆全身。'] },
+
+    sc26: { name:'放鬆姿勢 3', nameEn:'Relaxed Posture 3', cat:'scoliosis', subcat:'relaxed-posture', unit:'minutes', image:'sc26.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示採取放鬆姿勢。','維持指定時間（分鐘）。','保持自然呼吸，放鬆全身。'] },
+
+    // ──── Gait 步態 ────
+
+    sc27: { name:'有意識步態', nameEn:'Conscious Gait', cat:'scoliosis', subcat:'gait', unit:'breathing', image:'sc27.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['行走時有意識地維持矯正姿勢。','注意軀幹的對稱性和脊柱的伸展。','配合呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc28: { name:'施羅特步法', nameEn:'Schroth Gait', cat:'scoliosis', subcat:'gait', unit:'breathing', image:'sc28.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按施羅特方法的步態模式行走。','維持矯正姿勢和呼吸模式。','按指定呼吸循環次數完成。'] },
+
+    // ──── Sagittal Plane Correction 矢狀面矯正 ────
+
+    sc29: { name:'站在門口', nameEn:'Standing in a Doorway', cat:'scoliosis', subcat:'sagittal', unit:'breathing', image:'sc29.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['站在門口，利用門框輔助矯正矢狀面姿勢。','按物理治療師指示調整身體位置。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc30: { name:'跪在兩椅之間', nameEn:'Kneeling between 2 Chairs', cat:'scoliosis', subcat:'sagittal', unit:'breathing', image:'sc30.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['跪在兩張椅子之間，利用椅子輔助矯正。','按物理治療師指示調整身體位置。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc31: { name:'水母', nameEn:'Jelly Fish', cat:'scoliosis', subcat:'sagittal', unit:'breathing', image:['sc31a.png','sc31b.png'], video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行水母式矯正動作。','注意矢狀面的姿勢調整。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    sc32: { name:'劍魚', nameEn:'Swordfish', cat:'scoliosis', subcat:'sagittal', unit:'breathing', image:'sc32.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行劍魚式矯正動作。','注意矢狀面的姿勢調整。','配合施羅特呼吸法，按指定呼吸循環次數完成。'] },
+
+    // ──── General – Strengthening 強化運動 ────
+
+    sc33: { name:'跪姿撐體', nameEn:'Bird Dog', cat:'scoliosis', subcat:'strengthening', unit:'seconds-sets', image:'sc33.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['以雙手和雙膝跪撐的姿勢開始。','將一隻手臂向前伸，同時將對側腿向後伸。','保持背部平坦，核心收緊。','維持指定秒數後回到起始位置，換邊進行。'] },
+
+    sc34: { name:'平板支撐', nameEn:'Plank', cat:'scoliosis', subcat:'strengthening', unit:'seconds-sets', image:'sc34.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['前臂撐地，手肘在肩膀正下方。','收緊核心肌群，身體從頭到腳成一直線。','維持指定秒數後放下休息。'] },
+
+    sc35: { name:'側平板支撐', nameEn:'Side-Plank', cat:'scoliosis', subcat:'strengthening', unit:'seconds-sets', image:'sc35.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['側臥在地，雙腿並排屈曲或伸直，前臂撐地。','另一手叉腰或放在身旁。','腰部用力撐起，全身離地，以腳部及單手支撐身體。','維持指定秒數後放下休息。'] },
+
+    sc36: { name:'仰臥起坐', nameEn:'Crunches / Sit-up', cat:'scoliosis', subcat:'strengthening', unit:'seconds-sets', image:'sc36.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['屈膝仰臥。','根據腹肌的強弱，把手放大腿或胸前或頭後。','進行仰臥起坐動作。','按指定組數和秒數完成。'] },
+
+    // ──── General – Stretching 伸展運動 ────
+
+    sc37: { name:'大腿後肌伸展 (A)', nameEn:'Hamstrings Stretching (Variant A)', cat:'scoliosis', subcat:'stretching', unit:'seconds-sets', image:'sc37.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示的姿勢進行大腿後肌伸展。','維持指定秒數，感覺到大腿後方的伸展。','不要過度用力，保持正常呼吸。'] },
+
+    sc38: { name:'大腿後肌伸展 (B)', nameEn:'Hamstrings Stretching (Variant B)', cat:'scoliosis', subcat:'stretching', unit:'seconds-sets', image:'sc38.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示的姿勢進行大腿後肌伸展。','維持指定秒數，感覺到大腿後方的伸展。','不要過度用力，保持正常呼吸。'] },
+
+    sc39: { name:'胸及腰背肌伸展', nameEn:'Back Muscles Stretching', cat:'scoliosis', subcat:'stretching', unit:'seconds-sets', image:'sc39.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['按物理治療師指示進行胸及腰背肌伸展。','維持指定秒數。','不要過度用力，保持正常呼吸。'] },
+
+    sc40: { name:'腓腸肌伸展', nameEn:'Calves Stretching – Gastrocnemius', cat:'scoliosis', subcat:'stretching', unit:'seconds-sets', image:'sc40.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['小腿弓步拉伸：兩腿一前一後，前腿彎曲、後腿打直。','身體重心向前傾，可以扶著牆壁或椅子保持平衡。','注意後腳跟不離地。','維持指定秒數。'] },
+
+    sc41: { name:'比目魚肌伸展', nameEn:'Calves Stretching – Soleus', cat:'scoliosis', subcat:'stretching', unit:'seconds-sets', image:'sc41.png', video:'PASTE_YOUTUBE_LINK_HERE',
+        instructions:['小腿弓步拉伸：兩腿一前一後，前腿彎曲、後腿彎曲。','身體重心向前傾，可以扶著牆壁或椅子保持平衡。','注意後腳跟不離地。','維持指定秒數。'] },
+
+    // ════════════════════════════════════════════════════
+    //  KNEE 膝蓋
+    // ════════════════════════════════════════════════════
+
     k01: { name:'股四頭肌收縮', cat:'knee', video:'https://youtu.be/IF5eDfb8afM?si=n-5cdySZiLPLtQgv', instructions:['坐著並將腿伸直放在平面上。','收緊大腿上方的肌肉，將膝蓋往下壓。','維持收縮，然後放鬆。','依照處方次數重複進行。'] },
     k02: { name:'直腿抬高', cat:'knee', video:'https://youtu.be/CLH54xHXDMk', instructions:['仰臥，一腿彎曲，另一腿伸直。','收緊伸直腿的大腿肌肉。','將伸直的腿抬離地面約30公分。','短暫維持後，緩慢放下。'] },
     k03: { name:'腳跟滑動', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['仰臥，雙腿伸直。','慢慢彎曲一側膝蓋，讓腳跟滑向臀部。','再滑回起始位置。','保持動作平順且受控。'] },
@@ -159,7 +381,10 @@ var EXERCISES = {
     k09: { name:'單腿平衡', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['靠近牆壁或椅子，單腳站立以確保安全。','嘗試不扶東西維持平衡。','站立膝蓋保持微彎。','維持指定時間後換腿。'] },
     k10: { name:'側向踏階下降', cat:'knee', video:'PASTE_YOUTUBE_LINK_HERE', instructions:['站在階梯上，一腳靠近邊緣。','彎曲站立腿的膝蓋，慢慢將另一腳向地面降低。','輕觸地面後回到起始位置。','保持膝蓋對齊腳尖方向。'] },
 
-    // ──── 肩膀 (SHOULDER) ────
+    // ════════════════════════════════════════════════════
+    //  SHOULDER 肩膀
+    // ════════════════════════════════════════════════════
+
     s01: { name:'鐘擺運動', cat:'shoulder', instructions:['身體前傾，一手撐在桌面上。','讓患側手臂自然下垂。','輕輕將手臂做小幅度的繞圈擺動。','在舒適範圍內逐漸增大幅度。'] },
     s02: { name:'手指爬牆運動', cat:'shoulder', instructions:['面對牆壁站立，距離約一臂之遠。','將指尖放在牆上與腰同高的位置。','慢慢讓手指沿牆壁向上爬，盡可能往高處。','再慢慢讓手指向下爬回。'] },
     s03: { name:'彈力帶外旋', cat:'shoulder', instructions:['雙手握住彈力帶，手肘貼在身體兩側彎曲成90度。','保持手肘緊貼身體。','將前臂向外旋轉，拉開彈力帶。','緩慢回到起始位置。'] },
@@ -171,7 +396,10 @@ var EXERCISES = {
     s09: { name:'俯臥 Y 字抬舉', cat:'shoulder', instructions:['面朝下趴在平面或長凳上。','雙臂向頭頂上方伸展成 Y 字形，拇指朝上。','將雙臂向天花板方向抬起。','短暫維持後緩慢放下。'] },
     s10: { name:'俯臥 T 字抬舉', cat:'shoulder', instructions:['面朝下趴在平面或長凳上。','雙臂向兩側伸展成 T 字形，拇指朝上。','將雙臂向天花板方向抬起。','短暫維持後緩慢放下。'] },
 
-    // ──── 背部 (BACK) ────
+    // ════════════════════════════════════════════════════
+    //  BACK 背部
+    // ════════════════════════════════════════════════════
+
     b01: { name:'貓牛伸展', cat:'back', instructions:['以雙手和雙膝跪撐的姿勢開始。','將背部向上拱起（貓式），同時收下巴。','然後讓腹部向地面下沉，抬起頭部（牛式）。','在兩個姿勢之間緩慢交替。'] },
     b02: { name:'鳥狗式', cat:'back', instructions:['以雙手和雙膝跪撐的姿勢開始。','將一隻手臂向前伸，同時將對側腿向後伸。','保持背部平坦，核心收緊。','維持後回到起始位置，換邊進行。'] },
     b03: { name:'骨盆傾斜', cat:'back', instructions:['仰臥，雙膝彎曲，雙腳平放在地面上。','收緊腹部肌肉，將下背部壓平貼地。','維持傾斜姿勢。','放鬆後重複。'] },
@@ -183,7 +411,10 @@ var EXERCISES = {
     b09: { name:'側棒式', cat:'back', instructions:['側躺，手肘放在肩膀正下方。','將髖部抬離地面，使身體成一直線。','維持姿勢。','放下後換另一側重複。'] },
     b10: { name:'坐姿腰椎旋轉', cat:'back', instructions:['坐在椅子上，雙腳平放在地面。','雙臂交叉放在胸前。','慢慢將軀幹旋轉到一側。','維持後回到中間，再旋轉到另一側。'] },
 
-    // ──── 髖部 (HIP) ────
+    // ════════════════════════════════════════════════════
+    //  HIP 髖部
+    // ════════════════════════════════════════════════════
+
     h01: { name:'蛤蜊式', cat:'hip', instructions:['側躺，雙膝彎曲，雙腳併攏。','保持雙腳併攏，將上方的膝蓋盡可能抬高。','在頂端短暫維持。','緩慢放下。'] },
     h02: { name:'髖屈肌伸展', cat:'hip', instructions:['單膝跪地，另一腳踏在前方。','輕輕將髖部向前推。','您應該會感覺到髖部前方的伸展。','維持後換邊進行。'] },
     h03: { name:'梨狀肌伸展', cat:'hip', instructions:['仰臥，雙膝彎曲。','將一側腳踝放在對側膝蓋上。','將未交叉的那條腿拉向胸部。','維持伸展後換邊進行。'] },
@@ -195,7 +426,10 @@ var EXERCISES = {
     h09: { name:'怪獸走路', cat:'hip', instructions:['將彈力帶繞在腳踝處。','以微蹲姿勢站立。','向側方行走，保持彈力帶的張力。','向一邊走10步，然後反方向走回。'] },
     h10: { name:'單腿硬舉', cat:'hip', instructions:['單腳站立，膝蓋微彎。','以髖部為軸心向前傾，另一腿向後伸展。','全程保持背部挺直。','回到站立姿勢後重複。'] },
 
-    // ──── 頸部 (NECK) ────
+    // ════════════════════════════════════════════════════
+    //  NECK 頸部
+    // ════════════════════════════════════════════════════
+
     n01: { name:'收下巴運動', cat:'neck', instructions:['以正確姿勢坐著或站著。','輕輕將下巴向後收，做出「雙下巴」的動作。','維持收縮姿勢。','放鬆後重複。'] },
     n02: { name:'頸部前屈伸展', cat:'neck', instructions:['以正確姿勢坐著或站著。','慢慢將下巴低向胸部。','您應該會感覺到頸部後方的伸展。','維持後慢慢回到中立位置。'] },
     n03: { name:'頸部側彎', cat:'neck', instructions:['以正確姿勢坐著或站著。','慢慢將耳朵靠向肩膀。','不要聳肩。','維持伸展後換另一側重複。'] },
@@ -207,7 +441,10 @@ var EXERCISES = {
     n09: { name:'胸椎伸展', cat:'neck', instructions:['坐在椅子上，雙手放在頭後方。','輕輕讓上背部靠著椅背向後伸展。','維持伸展姿勢。','回到起始位置後重複。'] },
     n10: { name:'斜角肌伸展', cat:'neck', instructions:['坐著，一手握住椅子底部。','將頭傾向對側並略微向後仰。','您應該會感覺到頸部側面的伸展。','維持後換邊進行。'] },
 
-    // ──── 踝部 (ANKLE) ────
+    // ════════════════════════════════════════════════════
+    //  ANKLE 踝部
+    // ════════════════════════════════════════════════════
+
     a01: { name:'踝關節幫浦運動', cat:'ankle', instructions:['坐著或躺著，腿部伸直。','將腳尖向遠離身體的方向下壓（蹠屈）。','然後將腳尖向身體方向勾起（背屈）。','以幫浦動作的節奏重複進行。'] },
     a02: { name:'踝關節繞環', cat:'ankle', instructions:['坐著或躺著，腿部伸直。','慢慢地將踝關節做繞環動作。','順時針方向繞數圈。','然後反方向繞數圈。'] },
     a03: { name:'毛巾伸展', cat:'ankle', instructions:['坐著，腿部向前伸直。','將毛巾繞在前腳掌。','輕輕將毛巾拉向自己。','維持伸展姿勢。'] },
@@ -222,33 +459,27 @@ var EXERCISES = {
 
 var CAT_LABELS = { scoliosis:'脊柱側彎', knee:'膝蓋', shoulder:'肩膀', back:'背部', hip:'髖部', neck:'頸部', ankle:'踝部' };
 
-/*
- * Extracts the YouTube video ID from any URL format:
- *   https://www.youtube.com/watch?v=ID
- *   https://m.youtube.com/watch?v=ID&si=...
- *   https://youtu.be/ID
- *   https://youtu.be/ID?si=...
- *   or just the raw ID itself
- */
+var SUBCAT_LABELS = {
+    'psse-thoracic': 'PSSE 胸椎 Thoracic',
+    'psse-lumbar': 'PSSE 腰椎 Lumbar',
+    'psse-double': 'PSSE 雙彎 Double Curve',
+    'relaxed-posture': '放鬆姿勢 Relaxed Posture',
+    'gait': '步態 Gait',
+    'sagittal': '矢狀面矯正 Sagittal Plane',
+    'strengthening': '強化運動 Strengthening',
+    'stretching': '伸展運動 Stretching'
+};
+
 function extractYouTubeID(input) {
     if (!input) return null;
     input = input.trim();
-
-    /* youtu.be/ID  or  youtu.be/ID?si=... */
     var shortMatch = input.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
     if (shortMatch) return shortMatch[1];
-
-    /* youtube.com/watch?...v=ID... */
     var longMatch = input.match(/[?&]v=([A-Za-z0-9_-]{11})/);
     if (longMatch) return longMatch[1];
-
-    /* youtube.com/embed/ID */
     var embedMatch = input.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/);
     if (embedMatch) return embedMatch[1];
-
-    /* Already a raw 11-char ID */
     if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
-
     return null;
 }
 
@@ -262,7 +493,8 @@ function parseURL() {
 
     for (var i = 0; i < items.length; i++) {
         var item = items[i].trim();
-        var code, sets = 3, reps = 10, hold = 0, freq = 'daily';
+        var code, sets = 0, reps = 0, hold = 0, freq = 'daily';
+        var breathingCycles = 0, minutes = 0;
 
         var parts = item.split('.');
         if (parts.length > 1) freq = parts[1];
@@ -272,20 +504,58 @@ function parseURL() {
 
         if (main.length > 1) {
             var prescription = main[1];
-            var xMatch = prescription.match(/(\d+)x(\d+)/);
-            if (xMatch) { sets = parseInt(xMatch[1]); reps = parseInt(xMatch[2]); }
-            var hMatch = prescription.match(/h(\d+)/);
-            if (hMatch) hold = parseInt(hMatch[1]);
+
+            /* b5 → 5 breathing cycles */
+            var bMatch = prescription.match(/^b(\d+)$/i);
+            /* m15 → 15 minutes */
+            var mMatch = prescription.match(/^m(\d+)$/i);
+            /* r5 → 5 repetitions */
+            var rMatch = prescription.match(/^r(\d+)$/i);
+
+            if (bMatch) {
+                breathingCycles = parseInt(bMatch[1]);
+            } else if (mMatch) {
+                minutes = parseInt(mMatch[1]);
+            } else if (rMatch) {
+                reps = parseInt(rMatch[1]);
+            } else {
+                /* 3x10 → 3 sets of 10 (reps or seconds depending on unit) */
+                var xMatch = prescription.match(/(\d+)x(\d+)/);
+                if (xMatch) { sets = parseInt(xMatch[1]); reps = parseInt(xMatch[2]); }
+                var hMatch = prescription.match(/h(\d+)/);
+                if (hMatch) hold = parseInt(hMatch[1]);
+            }
+        } else {
+            /* No prescription specified – use sensible defaults */
+            var exData = EXERCISES[code];
+            if (exData && exData.unit) {
+                switch (exData.unit) {
+                    case 'reps':          reps = 5; break;
+                    case 'breathing':     breathingCycles = 5; break;
+                    case 'minutes':       minutes = 10; break;
+                    case 'seconds-sets':  sets = 3; reps = 30; break;
+                    default:              sets = 3; reps = 10; break;
+                }
+            } else {
+                sets = 3; reps = 10;
+            }
         }
 
         if (EXERCISES[code]) {
-            result.push({ code:code, sets:sets, reps:reps, hold:hold, freq:freq });
+            result.push({
+                code: code,
+                sets: sets,
+                reps: reps,
+                hold: hold,
+                freq: freq,
+                breathingCycles: breathingCycles,
+                minutes: minutes
+            });
         }
     }
     return result;
 }
 
-/* ── Video toggle ── */
 function toggleVideo(code, videoId) {
     var section = document.getElementById('vid-' + code);
     var thumb = section.querySelector('.video-thumbnail');
@@ -321,19 +591,61 @@ function render() {
         var ex = exercises[i];
         var data = EXERCISES[ex.code];
         var videoId = data.video ? extractYouTubeID(data.video) : null;
+        var unit = data.unit || 'sets-reps';
 
         html += '<div class="exercise-card">';
         html += '<span class="category cat-' + data.cat + '">' + CAT_LABELS[data.cat] + '</span>';
-        html += '<h2>' + (i+1) + '. ' + data.name + '</h2>';
 
+        /* Subcategory badge */
+        if (data.subcat && SUBCAT_LABELS[data.subcat]) {
+            html += '<span class="subcat">' + SUBCAT_LABELS[data.subcat] + '</span>';
+        }
+
+        html += '<span class="code">' + ex.code.toUpperCase() + '</span>';
+        html += '<h2>' + (i + 1) + '. ' + data.name + '</h2>';
+
+        /* English name */
+        if (data.nameEn) {
+            html += '<p class="name-en">' + data.nameEn + '</p>';
+        }
+
+        /* ── Exercise image ── */
+        if (data.image) {
+            var isMulti = Array.isArray(data.image);
+            html += '<div class="exercise-image' + (isMulti ? ' multi' : '') + '">';
+            if (isMulti) {
+                for (var k = 0; k < data.image.length; k++) {
+                    html += '<img src="' + IMAGE_BASE_PATH + data.image[k] + '" alt="' + data.name + '" onerror="this.style.display=\'none\'">';
+                }
+            } else {
+                html += '<img src="' + IMAGE_BASE_PATH + data.image + '" alt="' + data.name + '" onerror="this.style.display=\'none\'">';
+            }
+            html += '</div>';
+        }
+
+        /* ── Parameters ── */
         html += '<div class="params">';
-        html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
-        html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
-        if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
+
+        if (ex.breathingCycles > 0) {
+            html += '<div class="param"><div class="value">' + ex.breathingCycles + '</div><div class="label">呼吸循環<br>Breathing Cycles</div></div>';
+        } else if (ex.minutes > 0) {
+            html += '<div class="param"><div class="value">' + ex.minutes + '</div><div class="label">分鐘<br>Minutes</div></div>';
+        } else if (unit === 'seconds-sets') {
+            if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組 Sets</div></div>';
+            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">秒 Seconds</div></div>';
+        } else if (unit === 'reps') {
+            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次 Reps</div></div>';
+        } else {
+            /* Default: sets-reps (existing exercises) */
+            if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
+            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
+            if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
+        }
+
         html += '<div class="param"><div class="value">' + (freqLabels[ex.freq] || ex.freq) + '</div><div class="label">頻率</div></div>';
         html += '</div>';
 
-        /* ── Video section (only if a valid YouTube ID is resolved) ── */
+        /* ── Video ── */
         if (videoId) {
             html += '<div class="video-section" id="vid-' + ex.code + '">';
             html += '<div class="video-thumbnail" onclick="toggleVideo(\'' + ex.code + '\',\'' + videoId + '\')">';
@@ -345,6 +657,7 @@ function render() {
             html += '</div>';
         }
 
+        /* ── Instructions ── */
         html += '<div class="instructions"><strong>動作說明：</strong><ol>';
         for (var j = 0; j < data.instructions.length; j++) {
             html += '<li>' + data.instructions[j] + '</li>';
