@@ -34,6 +34,7 @@
         .cat-hip { background: #f39c12; }
         .cat-neck { background: #1abc9c; }
         .cat-ankle { background: #e67e22; }
+        .cat-tfcc { background: #16a085; }
         .params { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
         .param { background: #f0f4f8; padding: 8px 14px; border-radius: 8px; text-align: center; }
         .param .value { font-size: 20px; font-weight: 700; color: #2c7dba; }
@@ -41,6 +42,7 @@
         .instructions { font-size: 14px; color: #555; line-height: 1.6; margin-top: 10px; }
         .instructions ol { padding-left: 20px; }
         .instructions li { margin-bottom: 6px; }
+        .instructions p { margin-top: 4px; }
         .error { background: #fff5f5; border-left: 4px solid #e74c3c; padding: 20px; border-radius: 8px; margin: 20px; }
         .error h2 { color: #c0392b; }
         .error p { color: #e74c3c; font-size: 14px; }
@@ -206,6 +208,9 @@ var IMAGE_BASE_PATH = './images/';
  *    ?ex=sc08:b5.daily,sc34:3x30.daily
  *    ?ex=sc01:r5.daily,sc24:m15.daily
  *    ?ex=k01:3x10h5.daily,sc09:b8.2x-daily
+ *
+ *  TFCC exercises ignore prescription/frequency – just list the code:
+ *    ?ex=tf01,tf02,tf08
  * ======================================================
  */
 
@@ -367,6 +372,68 @@ var EXERCISES = {
         instructions:['小腿弓步拉伸：兩腿一前一後，前腿彎曲、後腿彎曲。','身體重心向前傾，可以扶著牆壁或椅子保持平衡。','注意後腳跟不離地。','維持指定秒數。'] },
 
     // ════════════════════════════════════════════════════
+    //  TFCC 三角纖維軟骨複合體
+    // ════════════════════════════════════════════════════
+
+    // ──── Phase 1 ────
+
+    tf01: { name:'手肘及手指主動關節活動訓練', nameEn:'Active Range of Motion of Elbow and Fingers in Sugartong Splint', cat:'tfcc', subcat:'tfcc-phase1', video:'https://youtu.be/dMQGwC2VJ3Y',
+        instructions:['請參考影片'] },
+
+    tf02: { name:'三角纖維軟骨友善肌肉等長收縮訓練（旋前方肌）', nameEn:'Isometric TFCC-Friendly Muscle Training (Pronator Quadratus)', cat:'tfcc', subcat:'tfcc-phase1', video:'https://youtu.be/vaCZmPFyc60',
+        instructions:['請參考影片'] },
+
+    tf03: { name:'近端肌肉強化訓練（肱橈肌、肱三頭肌）', nameEn:'Proximal muscle strengthening (Brachioradialis, Triceps)', cat:'tfcc', subcat:'tfcc-phase1', video:'https://youtube.com/shorts/EJIz0VlNpXA',
+        instructions:['請參考影片'] },
+
+    tf04: { name:'三角纖維軟骨複合體友善肌肉等長收縮訓練（尺側伸腕肌）', nameEn:'Isometric TFCC-Friendly Muscle Training (Extensor carpi ulnaris)', cat:'tfcc', subcat:'tfcc-phase1', video:'https://youtube.com/shorts/dR73r9l8LEk',
+        instructions:['請參考影片'] },
+
+    // ──── Phase 2 ────
+
+    tf05: { name:'關節位置訓練', nameEn:'Joint position sense', cat:'tfcc', subcat:'tfcc-phase2', video:'https://youtu.be/hIxma38KF00',
+        instructions:['請參考影片'] },
+
+    tf06: { name:'True balance', nameEn:'True balance', cat:'tfcc', subcat:'tfcc-phase2', video:'https://youtu.be/WdokmhJQA08',
+        instructions:['請參考影片'] },
+
+    tf07: { name:'三角纖維軟骨友善肌肉等長收縮訓練（尺側伸腕肌、旋前方肌）', nameEn:'Isometric TFCC-Friendly Muscle Training (Extensor carpi ulnaris, Pronator quadratus)', cat:'tfcc', subcat:'tfcc-phase2', video:'https://youtube.com/shorts/9lInr17uWSs',
+        instructions:['請參考影片'] },
+
+    // ──── Phase 3 ────
+
+    tf08: { name:'手腕迷宮', nameEn:'Wrist maze', cat:'tfcc', subcat:'tfcc-phase3', video:'https://youtu.be/CiwleYg6ljY',
+        instructions:['請參考影片'] },
+
+    tf09: { name:'三角纖維軟骨友善肌肉收縮訓練（向心→離心）', nameEn:'Isotonic TFCC-Friendly Muscle Training (Concentric → Eccentric)', cat:'tfcc', subcat:'tfcc-phase3', video:'https://youtube.com/shorts/fHUnPSFkIYk',
+        instructions:['請參考影片'] },
+
+    tf10: { name:'使用泥膠進行握力及捏力訓練', nameEn:'Gentle grip strengthening & pinch strengthening with putty', cat:'tfcc', subcat:'tfcc-phase3', video:'https://youtube.com/shorts/uGeJDhRcy0U',
+        instructions:['請參考影片'] },
+
+    // ──── Phase 4 ────
+
+    tf11: { name:'本體感覺訓練 - Bodyblade, Flexbar', nameEn:'Proprioception with perturbation - Bodyblade, Flexbar', cat:'tfcc', subcat:'tfcc-phase4', video:'https://youtube.com/shorts/fLDlFWNAdA0',
+        instructions:['請參考影片'] },
+
+    tf12: { name:'握力強化訓練（彈力網、泥膠、手指握力器）', nameEn:'Grip strengthening with Powerweb, Putty and Digiflex', cat:'tfcc', subcat:'tfcc-phase4', video:'https://youtube.com/shorts/roJMEdUjLbs',
+        instructions:['請參考影片'] },
+
+    // ──── Phase 5 ────
+
+    tf13: { name:'陀螺儀', nameEn:'Gyroscope', cat:'tfcc', subcat:'tfcc-phase5', video:'https://youtu.be/ULy-YEtRvLQ',
+        instructions:['請參考影片'] },
+
+    tf14: { name:'牆上伏地挺身訓練', nameEn:'Wall push up', cat:'tfcc', subcat:'tfcc-phase5', video:'https://youtube.com/shorts/bNO7Uqr3mMQ',
+        instructions:['請參考影片'] },
+
+    tf15: { name:'手腕控球訓練', nameEn:'Bouncing weightball on powerweb', cat:'tfcc', subcat:'tfcc-phase5', video:'https://youtube.com/shorts/dzQWYgiOgJE',
+        instructions:['請參考影片'] },
+
+    tf16: { name:'橡筋帶PNF對角線動作', nameEn:'PNF Patterns with Theraband', cat:'tfcc', subcat:'tfcc-phase5', video:'https://youtube.com/shorts/1cmE5_XSzGY',
+        instructions:['請參考影片'] },
+
+    // ════════════════════════════════════════════════════
     //  KNEE 膝蓋
     // ════════════════════════════════════════════════════
 
@@ -457,7 +524,7 @@ var EXERCISES = {
     a10: { name:'BOSU 球平衡', cat:'ankle', instructions:['單腳或雙腳站在 BOSU 球上。','嘗試維持平衡。','從雙腳開始，逐漸進階到單腳。','旁邊放一面牆壁以確保安全。'] }
 };
 
-var CAT_LABELS = { scoliosis:'脊柱側彎', knee:'膝蓋', shoulder:'肩膀', back:'背部', hip:'髖部', neck:'頸部', ankle:'踝部' };
+var CAT_LABELS = { scoliosis:'脊柱側彎', knee:'膝蓋', shoulder:'肩膀', back:'背部', hip:'髖部', neck:'頸部', ankle:'踝部', tfcc:'三角纖維軟骨複合體 TFCC' };
 
 var SUBCAT_LABELS = {
     'psse-thoracic': 'PSSE 胸椎 Thoracic',
@@ -467,7 +534,12 @@ var SUBCAT_LABELS = {
     'gait': '步態 Gait',
     'sagittal': '矢狀面矯正 Sagittal Plane',
     'strengthening': '強化運動 Strengthening',
-    'stretching': '伸展運動 Stretching'
+    'stretching': '伸展運動 Stretching',
+    'tfcc-phase1': 'TFCC phase 1',
+    'tfcc-phase2': 'TFCC phase 2',
+    'tfcc-phase3': 'TFCC phase 3',
+    'tfcc-phase4': 'TFCC phase 4',
+    'tfcc-phase5': 'TFCC phase 5'
 };
 
 function extractYouTubeID(input) {
@@ -479,6 +551,8 @@ function extractYouTubeID(input) {
     if (longMatch) return longMatch[1];
     var embedMatch = input.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/);
     if (embedMatch) return embedMatch[1];
+    var shortsMatch = input.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/);
+    if (shortsMatch) return shortsMatch[1];
     if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
     return null;
 }
@@ -592,6 +666,7 @@ function render() {
         var data = EXERCISES[ex.code];
         var videoId = data.video ? extractYouTubeID(data.video) : null;
         var unit = data.unit || 'sets-reps';
+        var isTFCC = (data.cat === 'tfcc');
 
         html += '<div class="exercise-card">';
         html += '<span class="category cat-' + data.cat + '">' + CAT_LABELS[data.cat] + '</span>';
@@ -623,27 +698,29 @@ function render() {
             html += '</div>';
         }
 
-        /* ── Parameters ── */
-        html += '<div class="params">';
+        /* ── Parameters (skipped entirely for TFCC) ── */
+        if (!isTFCC) {
+            html += '<div class="params">';
 
-        if (ex.breathingCycles > 0) {
-            html += '<div class="param"><div class="value">' + ex.breathingCycles + '</div><div class="label">呼吸循環<br>Breathing Cycles</div></div>';
-        } else if (ex.minutes > 0) {
-            html += '<div class="param"><div class="value">' + ex.minutes + '</div><div class="label">分鐘<br>Minutes</div></div>';
-        } else if (unit === 'seconds-sets') {
-            if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組 Sets</div></div>';
-            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">秒 Seconds</div></div>';
-        } else if (unit === 'reps') {
-            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次 Reps</div></div>';
-        } else {
-            /* Default: sets-reps (existing exercises) */
-            if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
-            if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
-            if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
+            if (ex.breathingCycles > 0) {
+                html += '<div class="param"><div class="value">' + ex.breathingCycles + '</div><div class="label">呼吸循環<br>Breathing Cycles</div></div>';
+            } else if (ex.minutes > 0) {
+                html += '<div class="param"><div class="value">' + ex.minutes + '</div><div class="label">分鐘<br>Minutes</div></div>';
+            } else if (unit === 'seconds-sets') {
+                if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組 Sets</div></div>';
+                if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">秒 Seconds</div></div>';
+            } else if (unit === 'reps') {
+                if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次 Reps</div></div>';
+            } else {
+                /* Default: sets-reps (existing exercises) */
+                if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
+                if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
+                if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
+            }
+
+            html += '<div class="param"><div class="value">' + (freqLabels[ex.freq] || ex.freq) + '</div><div class="label">頻率</div></div>';
+            html += '</div>';
         }
-
-        html += '<div class="param"><div class="value">' + (freqLabels[ex.freq] || ex.freq) + '</div><div class="label">頻率</div></div>';
-        html += '</div>';
 
         /* ── Video ── */
         if (videoId) {
@@ -658,11 +735,16 @@ function render() {
         }
 
         /* ── Instructions ── */
-        html += '<div class="instructions"><strong>動作說明：</strong><ol>';
-        for (var j = 0; j < data.instructions.length; j++) {
-            html += '<li>' + data.instructions[j] + '</li>';
+        if (isTFCC) {
+            /* Simple plain-text line for TFCC exercises */
+            html += '<div class="instructions"><strong>動作說明：</strong><p>' + data.instructions[0] + '</p></div>';
+        } else {
+            html += '<div class="instructions"><strong>動作說明：</strong><ol>';
+            for (var j = 0; j < data.instructions.length; j++) {
+                html += '<li>' + data.instructions[j] + '</li>';
+            }
+            html += '</ol></div>';
         }
-        html += '</ol></div>';
         html += '</div>';
     }
 
