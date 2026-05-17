@@ -113,77 +113,6 @@
  * ======================================================
  *  Place exercise images in an 'images/' folder in the
  *  same directory / repository as this HTML file.
- *
- *  GitHub repo structure example:
- *    /index.html           ← this file
- *    /images/sc01.png
- *    /images/sc02.png
- *    /images/sc03.png
- *    ...
- *
- *  Each exercise has an 'image' field below.
- *  Replace the filename with your actual image file.
- *  Set to null to hide the image for that exercise.
- *
- *  IMAGE FILE MAPPING (Scoliosis):
- *  ───────────────────────────────────────────────────
- *  PSSE – Thoracic:
- *    sc01.png  → Side-bending in Sitting (A)
- *    sc02.png  → Side-bending in Sitting (B)
- *    sc03.png  → Derotation – Fixed Pelvis
- *    sc04.png  → Derotation – Fixed Shoulder
- *    sc05.png  → Stretching the Weak Side
- *    sc06.png  → Between 2 Poles (Standing)
- *    sc07.png  → Between 2 Poles (Sitting)
- *    sc08.png  → Chest Twister
- *    sc09.png  → Shoulder Counter Traction Side-Position
- *    sc10.png  → Shoulder Counter Traction Elastic Band
- *    sc11.png  → Sideways Hang (A)
- *    sc12.png  → Sideways Hang (B)
- *
- *  PSSE – Lumbar:
- *    sc13.png  → Posterior Depression
- *    sc14.png  → Foot under a Bar (Sitting)
- *    sc15.png  → Foot under a Bar (Standing)
- *    sc16.png  → Pelvic Tilt – Left Lumbar Curve
- *    sc17.png  → Kneeling on One Knee
- *    sc18.png  → Muscle Cylinder Side-Position
- *    sc19.png  → Muscle Cylinder (Standing)
- *    sc20.png  → Prominent Hip Exercises
- *
- *  PSSE – Double Curve:
- *    sc21.png  → Shoulder Counter Traction + Muscle Cylinder
- *    sc22.png  → Sail (Standing)
- *    sc23.png  → Sail (Kneeling)
- *
- *  Relaxed Posture:
- *    sc24.png  → Relaxed Posture 1
- *    sc25.png  → Relaxed Posture 2
- *    sc26.png  → Relaxed Posture 3
- *
- *  Gait:
- *    sc27.png  → Conscious Gait
- *    sc28.png  → Schroth Gait
- *
- *  Sagittal Plane Correction:
- *    sc29.png   → Standing in a Doorway
- *    sc30.png   → Kneeling between 2 Chairs
- *    sc31a.png  → Jelly Fish (image 1)
- *    sc31b.png  → Jelly Fish (image 2)
- *    sc32.png   → Swordfish
- *
- *  General – Strengthening:
- *    sc33.png  → Bird Dog
- *    sc34.png  → Plank
- *    sc35.png  → Side-Plank
- *    sc36.png  → Crunches / Sit-up
- *
- *  General – Stretching:
- *    sc37.png  → Hamstrings Stretching (A)
- *    sc38.png  → Hamstrings Stretching (B)
- *    sc39.png  → Back Muscles Stretching
- *    sc40.png  → Calves – Gastrocnemius
- *    sc41.png  → Calves – Soleus
  * ======================================================
  */
 var IMAGE_BASE_PATH = './images/';
@@ -194,35 +123,8 @@ var IMAGE_BASE_PATH = './images/';
  * ======================================================
  *  ?ex=CODE:PRESCRIPTION.FREQUENCY, ...
  *
- *  PRESCRIPTION formats:
- *    3x10    → 3 sets × 10 reps  (or 3 sets × 10 sec for seconds-sets unit)
- *    3x10h5  → 3 sets × 10 reps, hold 5 sec
- *    r5      → 5 repetitions
- *    b5      → 5 breathing cycles
- *    m15     → 15 minutes
- *
- *  FREQUENCY:
- *    daily | 2x-daily | 3x-week | alternate
- *
- *  Examples:
- *    ?ex=sc08:b5.daily,sc34:3x30.daily
- *    ?ex=sc01:r5.daily,sc24:m15.daily
- *    ?ex=k01:3x10h5.daily,sc09:b8.2x-daily
- *
  *  TFCC exercises ignore prescription/frequency – just list the code:
  *    ?ex=tf01,tf02,tf08
- * ======================================================
- */
-
-/*
- * ======================================================
- *  HOW TO ADD A YOUTUBE VIDEO
- * ======================================================
- *  Paste ANY YouTube link format into the video field:
- *    video:'https://www.youtube.com/watch?v=IF5eDfb8afM'
- *    video:'https://youtu.be/IF5eDfb8afM'
- *    video:'IF5eDfb8afM'            (just the ID also works)
- *  Leave as 'PASTE_YOUTUBE_LINK_HERE' to hide the video.
  * ======================================================
  */
 
@@ -419,6 +321,9 @@ var EXERCISES = {
     tf12: { name:'握力強化訓練（彈力網、泥膠、手指握力器）', nameEn:'Grip strengthening with Powerweb, Putty and Digiflex', cat:'tfcc', subcat:'tfcc-phase4', video:'https://youtube.com/shorts/roJMEdUjLbs',
         instructions:['請參考影片'] },
 
+    tf17: { name:'迷宮遊戲', nameEn:'Labyrinth game', cat:'tfcc', subcat:'tfcc-phase4', video:'https://youtube.com/shorts/hzTUvwoALWY',
+        instructions:['請參考影片'] },
+
     // ──── Phase 5 ────
 
     tf13: { name:'陀螺儀', nameEn:'Gyroscope', cat:'tfcc', subcat:'tfcc-phase5', video:'https://youtu.be/ULy-YEtRvLQ',
@@ -579,11 +484,8 @@ function parseURL() {
         if (main.length > 1) {
             var prescription = main[1];
 
-            /* b5 → 5 breathing cycles */
             var bMatch = prescription.match(/^b(\d+)$/i);
-            /* m15 → 15 minutes */
             var mMatch = prescription.match(/^m(\d+)$/i);
-            /* r5 → 5 repetitions */
             var rMatch = prescription.match(/^r(\d+)$/i);
 
             if (bMatch) {
@@ -593,14 +495,12 @@ function parseURL() {
             } else if (rMatch) {
                 reps = parseInt(rMatch[1]);
             } else {
-                /* 3x10 → 3 sets of 10 (reps or seconds depending on unit) */
                 var xMatch = prescription.match(/(\d+)x(\d+)/);
                 if (xMatch) { sets = parseInt(xMatch[1]); reps = parseInt(xMatch[2]); }
                 var hMatch = prescription.match(/h(\d+)/);
                 if (hMatch) hold = parseInt(hMatch[1]);
             }
         } else {
-            /* No prescription specified – use sensible defaults */
             var exData = EXERCISES[code];
             if (exData && exData.unit) {
                 switch (exData.unit) {
@@ -671,7 +571,6 @@ function render() {
         html += '<div class="exercise-card">';
         html += '<span class="category cat-' + data.cat + '">' + CAT_LABELS[data.cat] + '</span>';
 
-        /* Subcategory badge */
         if (data.subcat && SUBCAT_LABELS[data.subcat]) {
             html += '<span class="subcat">' + SUBCAT_LABELS[data.subcat] + '</span>';
         }
@@ -679,12 +578,10 @@ function render() {
         html += '<span class="code">' + ex.code.toUpperCase() + '</span>';
         html += '<h2>' + (i + 1) + '. ' + data.name + '</h2>';
 
-        /* English name */
         if (data.nameEn) {
             html += '<p class="name-en">' + data.nameEn + '</p>';
         }
 
-        /* ── Exercise image ── */
         if (data.image) {
             var isMulti = Array.isArray(data.image);
             html += '<div class="exercise-image' + (isMulti ? ' multi' : '') + '">';
@@ -698,7 +595,6 @@ function render() {
             html += '</div>';
         }
 
-        /* ── Parameters (skipped entirely for TFCC) ── */
         if (!isTFCC) {
             html += '<div class="params">';
 
@@ -712,7 +608,6 @@ function render() {
             } else if (unit === 'reps') {
                 if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次 Reps</div></div>';
             } else {
-                /* Default: sets-reps (existing exercises) */
                 if (ex.sets > 0) html += '<div class="param"><div class="value">' + ex.sets + '</div><div class="label">組數</div></div>';
                 if (ex.reps > 0) html += '<div class="param"><div class="value">' + ex.reps + '</div><div class="label">次數</div></div>';
                 if (ex.hold > 0) html += '<div class="param"><div class="value">' + ex.hold + '秒</div><div class="label">維持</div></div>';
@@ -722,7 +617,6 @@ function render() {
             html += '</div>';
         }
 
-        /* ── Video ── */
         if (videoId) {
             html += '<div class="video-section" id="vid-' + ex.code + '">';
             html += '<div class="video-thumbnail" onclick="toggleVideo(\'' + ex.code + '\',\'' + videoId + '\')">';
@@ -734,9 +628,7 @@ function render() {
             html += '</div>';
         }
 
-        /* ── Instructions ── */
         if (isTFCC) {
-            /* Simple plain-text line for TFCC exercises */
             html += '<div class="instructions"><strong>動作說明：</strong><p>' + data.instructions[0] + '</p></div>';
         } else {
             html += '<div class="instructions"><strong>動作說明：</strong><ol>';
